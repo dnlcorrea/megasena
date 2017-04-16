@@ -1,0 +1,38 @@
+#! /usr/bin/env php
+
+<?php
+
+require 'vendor/autoload.php';
+
+if (count($argv) < 3) {
+    exit("Exemplo: megasena 10000 1 6 5 4 3 16 28".PHP_EOL);
+}
+
+$mega = new MegaSena(new LottoSet, new LottoSet);
+
+array_shift($argv);
+
+$numberOfPlays = array_shift($argv);
+
+$mega->placeBets($argv);
+
+for ($i = 0; $i < $numberOfPlays; $i++)
+{
+    echo "Jogo #" . ($i+1) . " [" . $mega->drawNumbers()->toString() . "]\n";
+    if ($mega->evaluateBet()) {
+
+        Message::winner($i, $mega->bet()->count(), $mega->getCost());
+
+        Message::playedNumbers($mega->bet()->toString());
+
+        exit("\n\n");
+    }
+
+    $mega->clearDraw();
+}
+
+Message::loser($mega->getCost(), $i, $mega->bet()->count());
+Message::playedNumbers($mega->bet()->toString());
+echo "\n\n";
+
+#vim:set et sw=4 ts=4 filetype=php:
